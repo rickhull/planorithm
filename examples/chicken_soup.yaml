@@ -1,0 +1,58 @@
+name: Chicken Soup Recipe
+setup:
+  - name: Ingredients
+    setup:
+      - test: 2 quarts water
+      - test: 1 whole chicken
+      - test: 1 onion
+      - test: 2 carrots
+      - test: 2 celery stalks
+      - test: 2 cloves garlic
+      - test: 1-2 tablespoons salt
+      - test: 1 bay leaf
+    components:
+      - action: remove innards and clean the chicken
+      - action: chop off the root, slice onion in half, leave the skins on
+      - action: peel carrots and rinse
+      - action: chop off celery ends and rinse
+      - action: chop or smash the garlic
+    teardown:
+      - action: gather vegetable debris into compost bin
+      - test: no vegetable debris
+      - action: clean any equipment or utensils that contacted raw chicken
+      - test: chicken debris in trash
+      - test: no chicken debris remaining
+      - test: chicken surfaces are clean
+  - name: Equipment
+    components:
+      - test: 4 quart stockpot or larger (cooking)
+      - test: 4 quart stockpot or larger (straining)
+      - test: knife and cutting board
+      - test: refuse container for raw chicken
+      - test: compost bin for vegetable matter
+      - test: 10k BTU stove
+      - test: large sink
+      - test: large strainer
+components:
+  - action: Place all prepped ingredients in the pot
+  - action: Set stove to high heat
+  - action: Bring water to a boil
+  - test: Water is boiling
+  - action: Reduce heat until bare simmer
+  - test: Water bubbles occasionally and gently
+  - iaction: While cooking, skim the surface every 5-15 minutes
+  - action: Cook for 1 hour, stirring occasionally
+  - test: Check a meaty part of the chicken for fork-tenderness
+  - action: If not fork-tender, continue to cook until it is
+  - test: Check a meaty part of the chicken for fork-tenderness
+  - action: Turn stove off
+  - action: Place strainer in 2nd stockpot in the sink
+  - action: Pour cooked stockpot into strainer
+  - iaction: While straining, take care not to let solids fall over or through
+  - test: The 2nd stockpot has all of the liquid
+  - action: Reserve any desired or meaty parts of the chicken from the strainer
+  - action: Dispose of the remaining strainer contents
+  - action: With forks and knives or hands, separate desirable meaty bits into chunks
+  - action: Combine liquid stock and chicken chunks into serving bowl
+teardown:
+  - action: TODO
