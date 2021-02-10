@@ -43,15 +43,15 @@ here.  Let's explode the hamburger:
 ```
 name: Call Mom
 setup:
-  - test: Know Mom's phone number
-  - test: Phone
+  - check: Know Mom's phone number
+  - check: Phone
 components:
   - action: Dial Mom's phone number
-  - test: Phone is ringing
+  - check: Phone is ringing
   - action: Wait for Mom to pick up
-  - test: Mom has answered the call
+  - check: Mom has answered the call
   - iaction: Talk to Mom until finished
-  - test: Call is finished
+  - check: Call is finished
   - action: Hang up phone
 ```
 
@@ -63,7 +63,7 @@ It has two other properties: `setup` and `components`.
 Along with `teardown`, these properties always
 represent a collection -- an ordered sequence of
 child Nodes.
-The first Node in `setup` has property `test` set to
+The first Node in `setup` has property `check` set to
 "Know Mom's phone number".
 You can probably figure out the rest.
 
@@ -78,13 +78,13 @@ setup:
       - iaction: Search iPhone for Mom's number
       - iaction: Check fridge for Mom's number
       - iaction: Remember Mom's number
-      - test: Have Mom's number
+      - check: Have Mom's number
   - name: Get Phone
     components:
       - iaction: Look for iPhone
       - iaction: Look for landline
-      - test: Have a Phone
-  - test: Phone works
+      - check: Have a Phone
+  - check: Phone works
 ```
 
 You can make this plan as detailed and foolproof
@@ -106,7 +106,7 @@ optional:
 * desc (String)
 * action (String)
 * iaction (String)
-* test (String)
+* check (String)
 * setup (Array)
 * components (Array)
 * teardown (Array)
@@ -132,23 +132,23 @@ IActions run concurrently.  Maybe with a while or until
 condition.  Maybe quickly.  Again, only one IAction per
 Node, though a Node may have an Action as well.
 
-### Test
+### Check
 
-A human will know what to do when the test fails.  Robots
-should give up.  Tests are scheduled only once all
+A human will know what to do when the check fails.  Robots
+should give up.  Checks are scheduled only once all
 scheduled Actions and IActions complete.
 
 ### Setup
 
 An array of Nodes.  Children.  The only thing special about
-Setup is that it runs before Actions, IActions, Tests,
+Setup is that it runs before Actions, IActions, Checks,
 Components, and Teardown.  Often its children are very
 simple nodes like `- action: Do the thing`.
 
 ### Components
 
 Just like Setup, except Components runs after Setup, Actions,
-IActions, and Tests, but before Teardown.
+IActions, and Checks, but before Teardown.
 
 ### Teardown
 

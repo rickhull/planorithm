@@ -8,18 +8,18 @@
 #       teardown: array of Node (children)
 #       action: string
 #       iaction: string
-#       test: string
+#       check: string
 #
 #    All keys are optional
 #      Suggested usage:
 #        name: put something useful, particularly for high level concepts
 #        desc: description, notes, etc. - very optional
 #        setup: steps to run before components
-#        components: the meat for actions, iactions, and tests
+#        components: the meat for actions, iactions, and checks
 #        teardown: undo any prior setup or actions, after components
 #        action: perform this action (sequential)
 #        iaction: perform this independent action (concurrent)
-#        test: check a condition, possible failure
+#        check: check a condition, possible failure
 #
 
 
@@ -29,7 +29,7 @@
 #   3. Visit setup nodes
 #   4. Schedule iaction
 #   5. Schedule action
-#   6. Schedule test once any action or iaction completes
+#   6. Schedule check once any action or iaction completes
 #   7. Visit components nodes
 #   8. Visit teardown nodes
 
@@ -55,14 +55,14 @@ module Planorithm
       val
     end
 
-    attr_reader :name, :desc, :action, :iaction, :test,
+    attr_reader :name, :desc, :action, :iaction, :check,
                 :setup, :components, :teardown
 
     def initialize(name: nil,
                    desc: nil,
                    action: nil,
                    iaction: nil,
-                   test: nil,
+                   check: nil,
                    setup: nil,
                    components: nil,
                    teardown: nil)
@@ -70,7 +70,7 @@ module Planorithm
       @desc = desc
       @action = action
       @iaction = iaction
-      @test = test
+      @check = check
       @setup = setup
       @components = components
       @teardown = teardown
@@ -82,7 +82,7 @@ module Planorithm
         self.desc = hsh["desc"]
         self.action = hsh["action"]
         self.iaction = hsh["iaction"]
-        self.test = hsh["test"]
+        self.check = hsh["check"]
         if hsh["setup"]
           self.setup = hsh["setup"].map { |s|
             Node.new.load_hash(s)
@@ -122,7 +122,7 @@ module Planorithm
       # now direct tasks
       puts format("%sIAction: %s", indent, schedule(@iaction)) if @iaction
       puts format("%sAction: %s", indent, schedule(@action)) if @action
-      puts format("%sTest: %s", indent, schedule(@test)) if @test
+      puts format("%sCheck: %s", indent, schedule(@check)) if @check
 
       # then components
       if @components and !@components.empty?
@@ -161,8 +161,8 @@ module Planorithm
       @iaction = Node.string!(val)
     end
 
-    def test=(val)
-      @test = Node.string!(val)
+    def check=(val)
+      @check = Node.string!(val)
     end
 
     def setup=(val)
