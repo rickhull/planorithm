@@ -250,3 +250,29 @@ subsequently scheduled `action` and `iaction`.
 5. Schedule `check` upon completion of `iaction`, `action`, and
    `components`; wait for completion
 6. Schedule `teardown`
+
+## Formats
+
+**Planorithm** is a methodology for writing structured documents.
+These documents can take many forms:
+
+* Hashes, Strings, and Arrays
+* YAML
+* JSON
+* Markdown
+
+**Planorithm** aims to convert faithfully between all of these formats
+so that you can express and execute your structured documents in a
+satisfying way.
+
+### YAML
+
+The current default format for a Planorithm document.  Input and Output.
+
+### JSON
+
+First-class citizen alongside YAML. Input and Output.
+
+### Markdown
+
+In-progress.  More of an output format than an input format.
