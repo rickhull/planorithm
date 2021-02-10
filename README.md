@@ -111,14 +111,14 @@ in a satisfying way.
 
 A *Node* consists of only 8 properties, all of which are **optional**:
 
-* `name` (String, Metadata)
-* `desc` (String, Metadata)
-* `action` (String, Task)
-* `iaction` (String, Task)
-* `check` (String, Task)
-* `setup` (Array of Nodes, Children)
-* `components` (Array of Nodes, Children)
-* `teardown` (Array of Nodes, Children)
+* `name` (String)
+* `desc` (String)
+* `action` (String)
+* `iaction` (String)
+* `check` (String)
+* `setup` (Array)
+* `components` (Array)
+* `teardown` (Array)
 
 ### `name`
 
@@ -132,15 +132,16 @@ Whatever.
 
 ### `action`
 
-*Task* - Just describe what you want to happen.  Magic robots will do it.
+*Task* - Just describe what you want to happen.
+Highlander robots will do it.
 There can be only one `action` per *Node*.
-Create a *Node* with `components` when you want a sequence of `action`s.
+Create a *Node* with `components` when you want a sequence of `action`.
 
 ### `iaction`
 
 *Task* - Independent action.
-`action`s run sequentially while `iaction`s run concurrently.
-Maybe quickly once.  Maybe with a "while" or "until" condition.
+`action` runs sequentially while `iaction` runs concurrently.
+Maybe quickly once.  Maybe periodically "while true".
 One `iaction` per *Node*, though that *Node* may have an `action`
 and `check` as well.
 
@@ -148,7 +149,7 @@ and `check` as well.
 
 *Task* - A human will know what to do when the `check` fails.
 Robots should give up.
-`check`s execute only once all scheduled `action`s and `iaction`s complete.
+`check` executes after `setup`, `iaction`, `action`, `components`.
 
 ### `setup`
 
@@ -172,34 +173,26 @@ state, or general cleanup, particularly of things created during `setup`.
 
 ## Task Scheduling
 
-*Nothing happens* in Planorithm until we can schedule a
-*Task*.  There are only 3 types of *Task*:
-
-* `action`
-* `iaction`
-* `check`
-
-### Node Scheduling
-
-A *Node* may include all 3 types, in which case the order
-of scheduling is:
+*Nothing happens* in Planorithm until we can schedule a *Task*.
+There are only 3 types of *Task*, executing (roughly) in order:
 
 1. `iaction`
 2. `action`
 3. `check`
 
-The `iaction` is scheduled first.
-The scheduler returns immediately upon receiving an `iaction`.
-The `action` is scheduled next.
-The scheduler immediately returns a handle to wait for completion.
-The `check` is scheduled last.
-The scheduler immediately returns a handle to wait for completion.
-As long as there are `action` and `iaction` running, the scheduler
-will wait to execute any `check` in the queue.
+### Rules
+
+1. *Tasks* are scheduled sequentially
+2. Execution happens "later" in a separate thread
+3. `iaction` blocks `check`
+4. `action` blocks `action` and `check`
+5. `check` blocks `action` and `iaction`
+
+### Node Scheduling
+
+As above: `iaction`, `action`, `check`
 
 ### Scheduling Across an Array of Nodes
-
-Given:
 
 ```
 components:
@@ -210,14 +203,6 @@ components:
   - action: start app
   - check: is app running?
 ```
-
-#### Rules
-
-1. *Tasks* are scheduled sequentially
-2. Execution happens "later" in a separate thread
-3. `iaction` blocks `check`
-4. `action` blocks `action` and `check`
-5. `check` blocks `action` and `iaction`
 
 #### *Tasks* are scheduled sequentially.
 
