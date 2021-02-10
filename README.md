@@ -41,7 +41,7 @@ We call this the hamburger model:
 Any step (*Node*, really) can be recursively defined according to the
 hamburger model.
 Every step is a potential hamburger that can be expanded to:
-Setup, Components, Teardown.
+**Setup, Components, Teardown**.
 
 ### Call Mom Example
 
@@ -179,6 +179,8 @@ state, or general cleanup, particularly of things created during `setup`.
 * `iaction`
 * `check`
 
+### Node Scheduling
+
 A *Node* may include all 3 types, in which case the order
 of scheduling is:
 
@@ -192,12 +194,10 @@ The `action` is scheduled next.
 The scheduler immediately returns a handle to wait for completion.
 The `check` is scheduled last.
 The scheduler immediately returns a handle to wait for completion.
-As long as there are `action`s and `iaction`s running, the scheduler
-will wait to execute any `check`s in the queue.
+As long as there are `action` and `iaction` running, the scheduler
+will wait to execute any `check` in the queue.
 
-Now, what about scheduling across an array of *Nodes*?
-
-#### Scheduling Across an Array of Nodes
+### Scheduling Across an Array of Nodes
 
 Given:
 
@@ -211,18 +211,15 @@ components:
   - check: is app running?
 ```
 
-##### Rules
+#### Rules
 
 1. *Tasks* are scheduled sequentially
 2. Execution happens "later" in a separate thread
-3. `check`s are blocked by everything
-4. `iaction`s are blocked by `check`s
-5. `action`s are blocked by `action`s and `check`s
-6. `check`s block everything
-7. `iaction`s block `check`s
-8. `action`s block `action`s
+3. `iaction` blocks `check`
+4. `action` blocks `action` and `check`
+5. `check` blocks `action` and `iaction`
 
-##### Tasks are scheduled sequentially.
+#### *Tasks* are scheduled sequentially.
 
 First we "start db".
 The following `check` will not execute until that `action`
@@ -233,14 +230,23 @@ The first `iaction` will "monitor the db" "while db is running"
 The second `iaction` will execute concurrently with the first
 and "ping slack channel".
 
-##### `iaction` execution does not block `action` execution
+#### `action` not blocked by `iaction`
 
 The "start app" `action` will be scheduled immediately
 and run as soon as any prior `action` completes.
 
 ##### `check` is blocked by and will block everything
 
-`check`s clear the board.  They will not run until all prior
-`action`s and `iaction`s complete, and their execution will
-block the execution of subsequently scheduled `action`s and
-`iaction`s.
+`check` clears the board.  It will not run until all prior `action` and
+`iaction` complete, and their execution will block the execution of
+subsequently scheduled `action` and `iaction`.
+
+### Combined Scheduling
+
+1. Schedule `setup` and all its children; wait for completion
+2. Schedule `iaction`; proceed immediately
+3. Schedule `action`; wait for completion
+4. Schedule `components` and all its children; wait for completion
+5. Schedule `check` upon completion of `iaction`, `action`, and
+   `components`; wait for completion
+6. Schedule `teardown`
