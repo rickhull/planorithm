@@ -1,0 +1,19 @@
+name: Get Bread
+setup:
+  - action: get starter
+  - action: cultivate starter
+  - check: starter is healthy
+  - check: flour
+  - check: water
+  - check: kitchen scale
+  - check: mixing bowl
+  - check: banneton
+  - check: proofing container
+components:
+  - action: combine equal masses of flour and water
+  - action: add 10% starter
+  - action: knead into dough
+  - check: dough has desired consistency
+  - action: set inside proofing container
+  - check: dough has proofed
+  - desc: TODO
