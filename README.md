@@ -3,19 +3,32 @@
 ## Rationale
 
 I love outlines.  Sections, breakdowns, steps, categories.
-Get the prose out of the way and give me relationships --
-an overview of the overall structure.  The conventional
-outline tools never seem to quite fit my use case.
+Get the prose out of the way and give me relationships -- an overview
+of the overall structure.
+The conventional outline tools never seem to quite fit my use case.
 I, II, III, A, B, C, etc.
-We need more than nested `<ul>` and `<ol>` in order to
-have enough structure yet enough flexibility.
+We need more than nested `<ul>` and `<ol>` in order to have enough
+structure yet enough flexibility.
 
-What Planorithm offers is a slight twist on the conventional
-outline format.  It's useful for structured documents --
-planning documents that will have to be executed someday.
+### Use Cases
 
-Maybe you are writing a test plan for a piece of equipment
-or software.  Maybe it's a recipe for chicken soup?
+What **Planorithm** offers is a slight twist on the conventional outline
+format.  It's useful for structured documents:
+
+* Technical documents
+* Planning documents
+* Assembly documents
+* Recipes
+* Test plans
+* Pseudocode
+* UX flows
+* General instructions
+* *Automate Everything*
+
+### Hamburger Model
+
+Maybe you are writing a test plan for a piece of equipment or software.
+Maybe it's a recipe for [chicken soup](examples/chicken_soup.yaml)?
 What's in common?  A sequence of steps.
 Often some prep or setup before the main steps.
 Maybe some cleanup afterward.
@@ -25,20 +38,22 @@ We call this the hamburger model:
 * Meat (Components)
 * Bun (Teardown)
 
-Any step (Node, really) can be recursively defined according
-to the hamburger model.
-Every step is a potential hamburger that can be expanded to
+Any step (*Node*, really) can be recursively defined according to the
+hamburger model.
+Every step is a potential hamburger that can be expanded to:
 Setup, Components, Teardown.
 
-Consider a simple task: Call Mom
+### Call Mom Example
+
+Consider a simple task: "Call Mom"
 
 ```
 action: Call Mom
 ```
 
-We have created a Node that has `action` property set to
-"Call Mom".  We haven't really expressed how to call Mom
-here.  Let's explode the hamburger:
+We have created a *Node* that has `action` property set to "Call Mom".
+We haven't really expressed how to call Mom here.
+Let's explode the hamburger:
 
 ```
 name: Call Mom
@@ -55,20 +70,17 @@ components:
   - action: Hang up phone
 ```
 
-We have created a Node that has `name` property set to
-"Call Mom".
-This Node could have an `action` property but it does
-not.
+We have created a *Node* that has `name` property set to "Call Mom".
+This *Node* could have an `action` property but it does not.
 It has two other properties: `setup` and `components`.
-Along with `teardown`, these properties always
-represent a collection -- an ordered sequence of
-child Nodes.
-The first Node in `setup` has property `check` set to
+Along with `teardown`, these properties always represent a collection --
+an ordered sequence of child *Nodes*.
+The first *Node* in `setup` has property `check` set to
 "Know Mom's phone number".
 You can probably figure out the rest.
 
-Now, you may ask, "What if I don't know Mom's phone
-number"?  Fine, you can explode that hamburger too:
+Now, you may ask, "What if I don't know Mom's phone number"?
+Fine, you can explode that hamburger too:
 
 ```
 name: Call Mom
@@ -87,110 +99,87 @@ setup:
   - check: Phone works
 ```
 
-You can make this plan as detailed and foolproof
-as you want.
-What you can't have here is conditional branches
-in the flow.
-This is a current and expected limitation of
-this model.
-It is hoped that extensions may be able to
-provide conditional branching in a satisfying
-way.
+You can make this plan as detailed and foolproof as you want.
+What you can't have here is conditional branches in the flow.
+This is a current and expected limitation of this model.
+It is hoped that extensions may be able to provide conditional branching
+in a satisfying way.
+
+
 
 ## Details
 
-A `Node` consists of 8 properties, all of which are
-optional:
+A *Node* consists of only 8 properties, all of which are **optional**:
 
-Purely Metadata:
+* `name` (String, Metadata)
+* `desc` (String, Metadata)
+* `action` (String, Task)
+* `iaction` (String, Task)
+* `check` (String, Task)
+* `setup` (Array of Nodes, Children)
+* `components` (Array of Nodes, Children)
+* `teardown` (Array of Nodes, Children)
 
-* name (String)
-* desc (String)
+### `name`
 
-Tasks:
+*Metadata* -
+Any *Node* with children or multiple *Tasks* should have a `name`.
 
-* action (String)
-* iaction (String)
-* check (String)
+### `desc`
 
-Children:
+*Metadata* - **Extremely optional**.  A notes field.  Metadata stash.
+Whatever.
 
-* setup (Array of Nodes)
-* components (Array of Nodes)
-* teardown (Array of Nodes)
+### `action`
 
-### Name
+*Task* - Just describe what you want to happen.  Magic robots will do it.
+There can be only one `action` per *Node*.
+Create a *Node* with `components` when you want a sequence of `action`s.
 
-*Metadata*
+### `iaction`
 
-Generally every Node with children should have a name.
+*Task* - Independent action.
+`action`s run sequentially while `iaction`s run concurrently.
+Maybe quickly once.  Maybe with a "while" or "until" condition.
+One `iaction` per *Node*, though that *Node* may have an `action`
+and `check` as well.
 
-### Desc
+### `check`
 
-*Metadata*
+*Task* - A human will know what to do when the `check` fails.
+Robots should give up.
+`check`s execute only once all scheduled `action`s and `iaction`s complete.
 
-Extremely optional.  A notes field.  Metadata stash. Whatever.
+### `setup`
 
-### Action
+*Collection of Nodes* - Children.
+The only thing special about `setup` is that it runs before `action`s,
+`iaction`s, `check`s, `components`, and `teardown`.
+Often its children are very simple nodes like `action: Do the thing`.
 
-*Task*
+### `components`
 
-Just describe what you want to happen.  Magic robots will do it.
-There can be only one Action per Node.  Create a Node with e.g.
-Components when you want a sequence of Actions.
+*Collection of Nodes* - Just like `setup`, except `components` runs after
+`setup`, `action`, `iaction`, and `check`, but before `teardown`.
 
-### IAction
+### `teardown`
 
-*Task*
+*Collection of Nodes* - Just like `components` except it runs last.
+It is **extremely optional** but often useful for completeness, to restore
+state, or general cleanup, particularly of things created during `setup`.
 
-Independent action.  Actions are run sequentially while
-IActions run concurrently.  Maybe with a while or until
-condition.  Maybe quickly once.  Again, only one IAction per
-Node, though that Node may have an Action and Check as well.
 
-### Check
-
-*Task*
-
-A human will know what to do when the check fails.  Robots
-should give up.  Checks are scheduled only once all
-scheduled Actions and IActions complete.
-
-### Setup
-
-*Collection of Nodes*
-
-An array of Nodes.  Children.  The only thing special about
-Setup is that it runs before Actions, IActions, Checks,
-Components, and Teardown.  Often its children are very
-simple nodes like `- action: Do the thing`.
-
-### Components
-
-*Collection of Nodes*
-
-Just like Setup, except Components runs after Setup, Actions,
-IActions, and Checks, but before Teardown.
-
-### Teardown
-
-*Collection of Nodes*
-
-Just like Components except it runs last.  It is extremely
-optional but often useful for completeness, to restore
-state, or general cleanup, particularly of things created
-during Setup.
 
 ## Task Scheduling
 
 *Nothing happens* in Planorithm until we can schedule a
-Task.  There are only 3 types of Task:
+*Task*.  There are only 3 types of *Task*:
 
 * `action`
 * `iaction`
 * `check`
 
-A Node may include all 3 types, in which case the order
+A *Node* may include all 3 types, in which case the order
 of scheduling is:
 
 1. `iaction`
@@ -206,11 +195,11 @@ The scheduler immediately returns a handle to wait for completion.
 As long as there are `action`s and `iaction`s running, the scheduler
 will wait to execute any `check`s in the queue.
 
-Now, what about scheduling across an array of Nodes?
+Now, what about scheduling across an array of *Nodes*?
 
 #### Scheduling Across an Array of Nodes
 
-Let's imagine some `components`:
+Given:
 
 ```
 components:
@@ -224,7 +213,7 @@ components:
 
 ##### Rules
 
-1. Tasks are scheduled sequentially
+1. *Tasks* are scheduled sequentially
 2. Execution happens "later" in a separate thread
 3. `check`s are blocked by everything
 4. `iaction`s are blocked by `check`s
@@ -249,8 +238,7 @@ and "ping slack channel".
 The "start app" `action` will be scheduled immediately
 and run as soon as any prior `action` completes.
 
-##### An executing `check` will block all subsequently scheduled
-tasks from executing
+##### `check` is blocked by and will block everything
 
 `check`s clear the board.  They will not run until all prior
 `action`s and `iaction`s complete, and their execution will
