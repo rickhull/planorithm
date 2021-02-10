@@ -74,7 +74,7 @@ module Planorithm
       puts if @name
       indent = ' ' * INDENT_SPACES * level
 
-      # first, name
+      # first, name and desc
       puts format("%sName: %s", indent, @name) if @name
       puts format("%sDesc: %s", indent, @desc) if @desc
 
@@ -94,6 +94,7 @@ module Planorithm
         @components.each { |n| n.process(level + 1) }
       end
 
+      # then check
       puts format("%sCheck: %s", indent, schedule(@check)) if @check
 
       # finally teardown
