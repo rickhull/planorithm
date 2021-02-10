@@ -1,38 +1,3 @@
-# Node:
-#   Empty object or dict
-#     Has 8 reserved words:
-#       name: string
-#       desc: string
-#       setup: array of Node (children)
-#       components: array of Node (children)
-#       teardown: array of Node (children)
-#       action: string
-#       iaction: string
-#       check: string
-#
-#    All keys are optional
-#      Suggested usage:
-#        name: put something useful, particularly for high level concepts
-#        desc: description, notes, etc. - very optional
-#        setup: steps to run before components
-#        components: the meat for actions, iactions, and checks
-#        teardown: undo any prior setup or actions, after components
-#        action: perform this action (sequential)
-#        iaction: perform this independent action (concurrent)
-#        check: check a condition, possible failure
-#
-
-
-# Node processing sequence (all keys are optional):
-#   1. Read and display name
-#   2. Read and display notes
-#   3. Visit setup nodes
-#   4. Schedule iaction
-#   5. Schedule action
-#   6. Schedule check once any action or iaction completes
-#   7. Visit components nodes
-#   8. Visit teardown nodes
-
 module Planorithm
   class Node
     INDENT_SPACES = 2
@@ -122,13 +87,14 @@ module Planorithm
       # now direct tasks
       puts format("%sIAction: %s", indent, schedule(@iaction)) if @iaction
       puts format("%sAction: %s", indent, schedule(@action)) if @action
-      puts format("%sCheck: %s", indent, schedule(@check)) if @check
 
       # then components
       if @components and !@components.empty?
         puts format("%sCOMPONENTS: %s", indent, @name)
         @components.each { |n| n.process(level + 1) }
       end
+
+      puts format("%sCheck: %s", indent, schedule(@check)) if @check
 
       # finally teardown
       if @teardown and !@teardown.empty?

@@ -160,7 +160,7 @@ Often its children are very simple nodes like `action: Do the thing`.
 ### `components`
 
 *Collection of Nodes* - Just like `setup`, except `components` runs after
-`setup`, `action`, `iaction`, and `check`, but before `teardown`.
+`setup`, `action`, and `iaction`, but before `check` and `teardown`.
 
 ### `teardown`
 
